@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ចំណាយ">
+<meta name="theme-color" content="#2563eb">
+<meta name="format-detection" content="telephone=no">
+<title>ការចំណាយប្រចាំថ្ងៃពេលសិក្សានៅក្រៅប្រទេស</title>
+<style>
+:root{--bg:#f1f5f9;--card:#fff;--tx:#0f172a;--mu:#64748b;--bd:#e2e8f0;--pr:#2563eb;--dg:#dc2626}
+@media(prefers-color-scheme:dark){:root{--bg:#0f172a;--card:#1e293b;--tx:#f1f5f9;--mu:#94a3b8;--bd:#334155;--pr:#60a5fa;--dg:#f87171}}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Khmer Sangam MN','Noto Sans Khmer','Segoe UI',Roboto,sans-serif;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);background:var(--bg);color:var(--tx);line-height:1.6}
+.wrap{max-width:1000px;margin:auto;padding:12px}
+h1{font-size:1.25rem;margin:8px 0}h2{font-size:1.05rem;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+label{font-size:.8rem;color:var(--mu);display:block}
+input,select,button{font:inherit;font-size:16px;width:100%;min-height:44px;padding:9px;-webkit-appearance:none;appearance:none;border:1px solid var(--bd);border-radius:9px;background:var(--bg);color:var(--tx)}
+button{cursor:pointer;background:var(--pr);color:#fff;border:0;font-weight:600}
+button.g{background:transparent;color:var(--tx);border:1px solid var(--bd)}
+button.s{width:auto;min-width:44px;padding:3px 10px;font-size:1rem}
+input[type=date]{min-height:44px;text-align:left}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--mu) 50%),linear-gradient(135deg,var(--mu) 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:30px}
+#dlg{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:14px;z-index:99}#dlg.on{display:flex}#dlg .card{width:100%;max-width:560px;margin:0}textarea{width:100%;height:160px;font-size:13px;padding:8px;border:1px solid var(--bd);border-radius:9px;background:var(--bg);color:var(--tx)}
+#ins{display:none;border-left:4px solid var(--pr)}#ins.on{display:block}
+.stat{text-align:center}.stat b{display:block;font-size:1.25rem;color:var(--pr)}.stat small{color:var(--mu)}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}.tabs button{flex:1;background:var(--card);color:var(--tx);border:1px solid var(--bd)}.tabs button.on{background:var(--pr);color:#fff}
+.item{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd)}
+.item .m{flex:1;min-width:0}.item .m small{color:var(--mu);display:block;overflow:hidden;text-overflow:ellipsis}
+.bar{height:10px;border-radius:6px;background:var(--bd);overflow:hidden}.bar i{display:block;height:100%}
+.tip{padding:9px 11px;border-radius:9px;margin:6px 0;background:rgba(245,158,11,.15);border-left:4px solid #f59e0b}
+.tip.ok{background:rgba(16,185,129,.15);border-color:#10b981}
+table{width:100%;border-collapse:collapse;font-size:.9rem}td,th{padding:6px;border-bottom:1px solid var(--bd);text-align:right}td:first-child,th:first-child{text-align:left}
+.hide{display:none}.r{text-align:right}
+@media print{.tabs,form,.noprint{display:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>💰 ការចំណាយប្រចាំថ្ងៃពេលសិក្សានៅក្រៅប្រទេស</h1>
+
+<div class="card" id="ins"><b>📲 ដំឡើងលើ iPhone / iPad</b><br><small>ត្រូវបើកក្នុង <b>Safari</b> ហើយចុចប៊ូតុង <b>Share ⬆️</b> → <b>Add to Home Screen (បន្ថែមទៅអេក្រង់ដើម)</b> ដើម្បីប្រើដូច app ពេញអេក្រង់។</small><br><button class="s g" style="margin-top:6px" onclick="$('ins').classList.remove('on');try{localStorage.setItem('hide_ins','1')}catch(e){}">យល់ហើយ</button></div>
+<div class="card hide" id="bw" style="border-left:4px solid #f59e0b"></div>
+<div class="card row">
+ <div><label>ថ្ងៃមើលសង្ខេប (យោង)</label><input type="date" id="vd"></div>
+ <div><label>អត្រាប្តូរប្រាក់ 1 AUD = ? USD</label><input type="number" id="rate" step="0.0001" min="0"></div>
+ <div class="noprint"><label>&nbsp;</label><button class="g" onclick="exportCsv()">⬇️ CSV</button></div>
+ <div class="noprint"><label>&nbsp;</label><button onclick="backup()">💾 បម្រុងទុក</button></div>
+ <div class="noprint"><label>&nbsp;</label><button class="g" onclick="impDlg()">📥 នាំចូល</button></div>
+</div>
+
+<div class="card">
+ <h2 id="ft">➕ កត់ត្រាការចំណាយ</h2>
+ <form id="f" class="row" onsubmit="save(event)">
+  <div><label>កាលបរិច្ឆេទ</label><input type="date" id="d" required></div>
+  <div><label>ប្រភេទ</label><select id="c" onchange="meal()"></select></div>
+  <div id="mw"><label>ពេលអាហារ</label><select id="m"></select></div>
+  <div><label>ចំនួនទឹកប្រាក់</label><input type="number" id="a" step="0.01" min="0.01" required placeholder="0.00"></div>
+  <div><label>រូបិយប័ណ្ណ</label><select id="u"><option>AUD</option><option>USD</option></select></div>
+  <div><label>កំណត់ចំណាំ</label><input id="n" placeholder="ឧ. Coles, Opal card"></div>
+  <div><label>&nbsp;</label><button>💾 រក្សាទុក</button></div>
+  <div id="cw" class="hide"><label>&nbsp;</label><button type="button" class="g" onclick="resetForm()">បោះបង់ការកែ</button></div>
+ </form>
+</div>
+
+<div class="tabs">
+ <button class="on" onclick="tab(0,this)">📋 បញ្ជី & សរុប</button>
+ <button onclick="tab(1,this)">🔍 វិភាគ & ណែនាំ</button>
+ <button onclick="tab(2,this)">📊 របាយការណ៍ឆ្នាំ</button>
+</div>
+
+<div id="dlg"><div class="card"><h2 id="dt"></h2><p id="dp" style="font-size:.85rem;color:var(--mu);margin:0 0 8px"></p><textarea id="dx"></textarea><div class="row" style="margin-top:8px"><button id="d1"></button><button class="g" onclick="$('dlg').classList.remove('on')">បិទ</button></div><div id="df" class="hide" style="margin-top:8px"><label>ឬជ្រើស file .json</label><input type="file" id="imp2" accept=".json,application/json,text/plain" onchange="restore(this)"></div></div></div>
+<section id="t0">
+ <div class="row" id="stats"></div>
+ <div class="card" style="margin-top:12px"><h2 id="lt">បញ្ជីចំណាយ</h2><div id="list"></div></div>
+</section>
+<section id="t1" class="hide"><div class="card"><h2>វិភាគចំណាយប្រចាំខែ</h2><div id="an"></div></div></section>
+<section id="t2" class="hide"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="yt">របាយការណ៍ប្រចាំឆ្នាំ</h2><button class="s noprint" onclick="window.print()">🖨️ បោះពុម្ព</button></div><div id="yr"></div></div></section>
+
+<p style="color:var(--mu);font-size:.8rem;text-align:center">ទិន្នន័យរក្សាទុកក្នុងឧបករណ៍ (ទ្វេរដង) ហើយគួរបម្រុងទុកជាប្រចាំ។ សរុបទាំងអស់បំប្លែងជា USD តាមអត្រាខាងលើ។</p>
+</div>
+
+<script>
+const CATS=[
+{k:'food',n:'អាហារ',i:'🍽️',c:'#f59e0b'},
+{k:'transport',n:'ធ្វើដំណើរ',i:'🚌',c:'#3b82f6'},
+{k:'study',n:'សម្ភារៈសិក្សា',i:'📚',c:'#8b5cf6'},
+{k:'tuition',n:'ថ្លៃសាលា',i:'🎓',c:'#ec4899'},
+{k:'housing',n:'ស្នាក់នៅ ទឹក ភ្លើង',i:'🏠',c:'#10b981'},
+{k:'health',n:'ធានារ៉ាប់រង & សុខភាព',i:'🩺',c:'#ef4444'},
+{k:'other',n:'ផ្សេងៗ',i:'🧾',c:'#64748b'}];
+const MEALS=['អាហារពេលព្រឹក','អាហារពេលថ្ងៃ','អាហារពេលល្ងាច'];
+const MON=['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+const KEY='abroad_expenses_v1';
+let mem=null;
+function load(){try{const s=localStorage.getItem(KEY);if(s)return JSON.parse(s)}catch(e){}return mem||{rate:0.65,items:[],ts:0,bk:0}}
+let S=load();
+// IndexedDB mirror (second copy, safer on iOS)
+let _db=null;
+function idb(){return new Promise(r=>{if(_db)return r(_db);try{const q=indexedDB.open('abroad_db',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>{_db=q.result;r(_db)};q.onerror=()=>r(null)}catch(e){r(null)}})}
+async function idbSet(v){const d=await idb();if(!d)return;try{d.transaction('kv','readwrite').objectStore('kv').put(v,KEY)}catch(e){}}
+async function idbGet(){const d=await idb();if(!d)return null;return new Promise(r=>{try{const q=d.transaction('kv').objectStore('kv').get(KEY);q.onsuccess=()=>r(q.result||null);q.onerror=()=>r(null)}catch(e){r(null)}})}
+function persist(){S.ts=Date.now();mem=S;const j=JSON.stringify(S);try{localStorage.setItem(KEY,j)}catch(e){}idbSet(j)}
+async function recover(){
+ try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+ const j=await idbGet();if(!j)return;
+ try{const o=JSON.parse(j);if((o.ts||0)>(S.ts||0)||(!S.items.length&&o.items&&o.items.length)){S=o;$('rate').value=S.rate;render()}}catch(e){}
+}
+const $=id=>document.getElementById(id);
+const today=()=>{const t=new Date();return new Date(t-t.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+const pd=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const iso=d=>new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const usd=e=>e.cur==='USD'?e.amt:e.amt*S.rate;
+const f2=n=>n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const cat=k=>CATS.find(c=>c.k===k)||CATS[6];
+const sum=fn=>S.items.filter(fn).reduce((a,e)=>a+usd(e),0);
+function wkStart(d){const x=new Date(d);const w=(x.getDay()+6)%7;x.setDate(x.getDate()-w);x.setHours(0,0,0,0);return x}
+let editId=null;
+
+function init(){
+ $('c').innerHTML=CATS.map(c=>`<option value="${c.k}">${c.i} ${c.n}</option>`).join('');
+ $('m').innerHTML=MEALS.map(m=>`<option>${m}</option>`).join('');
+ $('d').value=today();$('vd').value=today();$('rate').value=S.rate;
+ $('vd').onchange=render;
+ $('rate').onchange=()=>{const v=parseFloat($('rate').value);if(v>0){S.rate=v;persist();render()}};
+ meal();render();recover();
+ if(!localStorage.getItem('hide_ins')&&/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)&&'ontouchend' in document&&!navigator.standalone)$('ins').classList.add('on');
+ mkIcon();
+}
+function meal(){$('mw').classList.toggle('hide',$('c').value!=='food')}
+function save(ev){
+ ev.preventDefault();
+ const e={id:editId||Date.now(),date:$('d').value,cat:$('c').value,sub:$('c').value==='food'?$('m').value:'',amt:parseFloat($('a').value),cur:$('u').value,note:$('n').value.trim()};
+ if(!e.date||!(e.amt>0))return;
+ if(editId){S.items=S.items.map(x=>x.id===editId?e:x)}else S.items.push(e);
+ persist();const d=e.date;resetForm();$('d').value=d;$('vd').value=d;render();
+}
+function resetForm(){editId=null;$('f').reset();$('d').value=$('vd').value||today();$('ft').textContent='➕ កត់ត្រាការចំណាយ';$('cw').classList.add('hide');meal()}
+function edit(id){
+ const e=S.items.find(x=>x.id===id);if(!e)return;editId=id;
+ $('d').value=e.date;$('c').value=e.cat;meal();if(e.sub)$('m').value=e.sub;
+ $('a').value=e.amt;$('u').value=e.cur;$('n').value=e.note;
+ $('ft').textContent='✏️ កែសម្រួលការចំណាយ';$('cw').classList.remove('hide');
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+function del(id){if(confirm('តើអ្នកពិតជាចង់លុបការចំណាយនេះមែនទេ?')){S.items=S.items.filter(x=>x.id!==id);persist();if(editId===id)resetForm();render()}}
+function tab(i,b){[0,1,2].forEach(k=>$('t'+k).classList.toggle('hide',k!==i));document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));b.classList.add('on')}
+
+function render(){
+ const v=$('vd').value||today(),d=pd(v),ws=wkStart(d),we=new Date(ws);we.setDate(we.getDate()+6);
+ const wsI=iso(ws),weI=iso(we),ym=v.slice(0,7),y=v.slice(0,4);
+ const day=sum(e=>e.date===v),wk=sum(e=>e.date>=wsI&&e.date<=weI),mo=sum(e=>e.date.startsWith(ym)),yr=sum(e=>e.date.startsWith(y));
+ const st=(t,n,s)=>`<div class="card stat" style="margin:0"><small>${t}</small><b>$${f2(n)}</b><small>USD ${s||''}</small></div>`;
+ $('stats').innerHTML=st('ប្រចាំថ្ងៃ',day,v)+st('ប្រចាំសប្តាហ៍',wk,'(ច័ន្ទ–អាទិត្យ)')+st('ប្រចាំខែ',mo,MON[d.getMonth()])+st('ប្រចាំឆ្នាំ',yr,y);
+ // list for the month
+ const items=S.items.filter(e=>e.date.startsWith(ym)).sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+ $('lt').textContent=`បញ្ជីចំណាយខែ${MON[d.getMonth()]} ${y} (${items.length})`;
+ let h='',last='';
+ items.forEach(e=>{
+  if(e.date!==last){last=e.date;const dt=sum(x=>x.date===e.date);h+=`<div style="display:flex;justify-content:space-between;margin-top:10px;font-weight:700"><span>📅 ${e.date}</span><span>$${f2(dt)}</span></div>`}
+  const c=cat(e.cat);
+  h+=`<div class="item"><span style="font-size:1.4rem">${c.i}</span><div class="m"><b>${c.n}${e.sub?' · '+e.sub:''}</b><small>${esc(e.note)}</small></div>
+  <div class="r"><b>${f2(e.amt)} ${e.cur}</b>${e.cur==='AUD'?`<small style="display:block;color:var(--mu)">≈ $${f2(usd(e))}</small>`:''}</div>
+  <div style="display:flex;gap:4px"><button class="s g" onclick="edit(${e.id})">✏️</button><button class="s g" style="color:var(--dg)" onclick="del(${e.id})">🗑️</button></div></div>`;
+ });
+ $('list').innerHTML=h||'<p style="color:var(--mu)">មិនទាន់មានការកត់ត្រាក្នុងខែនេះទេ។</p>';
+ analyze(ym,d);year(y);remind();
+}
+
+function analyze(ym,d){
+ const cur=S.items.filter(e=>e.date.startsWith(ym));
+ const tot=cur.reduce((a,e)=>a+usd(e),0);
+ if(!cur.length){$('an').innerHTML='<p style="color:var(--mu)">សូមកត់ត្រាចំណាយជាមុនសិន ដើម្បីទទួលបានការវិភាគ។</p>';return}
+ const by={};CATS.forEach(c=>by[c.k]=0);cur.forEach(e=>by[e.cat]+=usd(e));
+ const pct=k=>tot?by[k]/tot*100:0;
+ const pm=new Date(d.getFullYear(),d.getMonth()-1,1);
+ const pym=iso(pm).slice(0,7),prev=sum(e=>e.date.startsWith(pym));
+ const days=new Set(cur.map(e=>e.date)).size;
+ const dim=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+ const flex=tot-by.tuition-by.housing;
+ let h=`<p>សរុបខែនេះ: <b>$${f2(tot)}</b> · មធ្យម/ថ្ងៃ (ថ្ងៃដែលមានចំណាយ ${days}): <b>$${f2(tot/days)}</b> · ប៉ាន់ស្មានពេញខែ (ចំណាយអាចគ្រប់គ្រងបាន): <b>$${f2(flex/Math.max(1,Math.min(dim,new Date().getMonth()===d.getMonth()?new Date().getDate():dim))*dim+by.tuition+by.housing)}</b></p>`;
+ h+=CATS.map(c=>`<div style="margin:8px 0"><div style="display:flex;justify-content:space-between"><span>${c.i} ${c.n}</span><span>$${f2(by[c.k])} · ${pct(c.k).toFixed(1)}%</span></div><div class="bar"><i style="width:${pct(c.k)}%;background:${c.c}"></i></div></div>`).join('');
+ // recommendations
+ const tips=[];
+ const food=cur.filter(e=>e.cat==='food');
+ const foodDays=new Set(food.map(e=>e.date)).size||1;
+ const outMeals=food.length;
+ if(pct('food')>30)tips.push(`🍽️ អាហារស្មើ ${pct('food').toFixed(0)}% នៃចំណាយសរុប (លើស 30%)។ សាកល្បងចម្អិនខ្លួនឯង និងរៀបចំអាហារទុកជាមុន អាចសន្សំបានច្រើន។`);
+ const dinner=food.filter(e=>e.sub===MEALS[2]),dAvg=dinner.length?dinner.reduce((a,e)=>a+usd(e),0)/dinner.length:0;
+ if(dAvg>12)tips.push(`🌙 អាហារពេលល្ងាចមធ្យម $${f2(dAvg)}/ដង — ខ្ពស់។ ការញ៉ាំក្រៅគួរកំណត់ត្រឹម 1–2 ដង/សប្តាហ៍។`);
+ const brk=food.filter(e=>e.sub===MEALS[0]),bAvg=brk.length?brk.reduce((a,e)=>a+usd(e),0)/brk.length:0;
+ if(bAvg>6)tips.push(`☕ អាហារពេលព្រឹកមធ្យម $${f2(bAvg)}/ដង — ការរៀបចំនៅផ្ទះ (ស៊ុត នំបុ័ង) ថោកជាងកាហ្វេទិញ។`);
+ if(pct('transport')>12)tips.push(`🚌 ការធ្វើដំណើរ ${pct('transport').toFixed(0)}% — ពិនិត្យប័ណ្ណសិស្ស/ប័ណ្ណដឹកជញ្ជូនរបស់សាលា ដើរ ឬជិះកង់ជំនួស Uber/Taxi។`);
+ if(pct('study')>10)tips.push(`📚 សម្ភារៈសិក្សា ${pct('study').toFixed(0)}% — ជួល/ទិញសៀវភៅមួយទឹក ឬប្រើបណ្ណាល័យសាលា។`);
+ if(pct('other')>12)tips.push(`🧾 ចំណាយផ្សេងៗ ${pct('other').toFixed(0)}% — ជាចំណាយដែលងាយកាត់បន្ថយបំផុត។ ដាក់ថវិកាកំណត់ក្នុងមួយខែ។`);
+ const small=cur.filter(e=>usd(e)<5&&['food','other'].includes(e.cat));
+ const smallT=small.reduce((a,e)=>a+usd(e),0);
+ if(small.length>=8)tips.push(`💸 មានចំណាយតូចៗ (<$5) ${small.length} ដង សរុប $${f2(smallT)} (កាហ្វេ ភេសជ្ជៈ អាហារសម្រន់)។ ចំណាយតូចៗកកកុញលឿន។`);
+ if(prev>0&&tot>prev*1.15)tips.push(`📈 ចំណាយខែនេះកើនឡើង ${((tot/prev-1)*100).toFixed(0)}% ធៀបនឹងខែមុន ($${f2(prev)})។ ពិនិត្យប្រភេទដែលកើនខ្លាំង។`);
+ if(by.health===0&&tot>0)tips.push(`🩺 មិនមានចំណាយធានារ៉ាប់រង/សុខភាព — ត្រូវប្រាកដថា OSHC/ធានារ៉ាប់រងសុខភាពរបស់អ្នកនៅមានសុពលភាព។`);
+ const top=[...cur].sort((a,b)=>usd(b)-usd(a)).slice(0,3);
+ h+='<h2 style="margin-top:16px">💡 អនុសាសន៍</h2>'+(tips.length?tips.map(t=>`<div class="tip">${t}</div>`).join(''):'<div class="tip ok">✅ ការចំណាយរបស់អ្នកមានតុល្យភាពល្អ! បន្តរក្សាទម្លាប់នេះ។</div>');
+ h+='<h2 style="margin-top:16px">🔝 ចំណាយធំបំផុត ៣</h2>'+top.map(e=>`<div class="item"><span>${cat(e.cat).i}</span><div class="m"><b>${cat(e.cat).n}</b><small>${e.date} ${esc(e.note)}</small></div><b>$${f2(usd(e))}</b></div>`).join('');
+ h+=`<p style="color:var(--mu);font-size:.8rem">ចំណាំ: ថ្លៃសាលា និងថ្លៃស្នាក់នៅជាចំណាយថេរ មិនរាប់ជាចំណាយមិនចាំបាច់ទេ។ អនុសាសន៍គឺជាការណែនាំទូទៅប៉ុណ្ណោះ។</p>`;
+ $('an').innerHTML=h;
+}
+
+function year(y){
+ $('yt').textContent=`📊 របាយការណ៍ប្រចាំឆ្នាំ ${y} (USD)`;
+ const ms=Array.from({length:12},(_,i)=>{const p=`${y}-${String(i+1).padStart(2,'0')}`;return sum(e=>e.date.startsWith(p))});
+ const mx=Math.max(...ms,1),T=ms.reduce((a,b)=>a+b,0);
+ const aud=S.items.filter(e=>e.date.startsWith(y)&&e.cur==='AUD').reduce((a,e)=>a+e.amt,0);
+ const usdN=S.items.filter(e=>e.date.startsWith(y)&&e.cur==='USD').reduce((a,e)=>a+e.amt,0);
+ let h=`<div class="row" style="margin-bottom:12px"><div class="card stat" style="margin:0"><small>សរុបទាំងឆ្នាំ</small><b>$${f2(T)}</b></div><div class="card stat" style="margin:0"><small>មធ្យម/ខែ</small><b>$${f2(T/12)}</b></div><div class="card stat" style="margin:0"><small>កត់ត្រាជា AUD</small><b>A$${f2(aud)}</b></div><div class="card stat" style="margin:0"><small>កត់ត្រាជា USD</small><b>$${f2(usdN)}</b></div></div>`;
+ h+='<h2>តាមខែ</h2>'+ms.map((m,i)=>`<div style="display:flex;align-items:center;gap:8px;margin:4px 0"><span style="width:62px;font-size:.85rem">${MON[i]}</span><div class="bar" style="flex:1"><i style="width:${m/mx*100}%;background:var(--pr)"></i></div><span style="width:80px;text-align:right;font-size:.85rem">$${f2(m)}</span></div>`).join('');
+ const by=CATS.map(c=>({c,v:sum(e=>e.date.startsWith(y)&&e.cat===c.k)}));
+ h+='<h2 style="margin-top:16px">តាមប្រភេទ</h2><table><tr><th>ប្រភេទ</th><th>USD</th><th>%</th></tr>'+by.map(o=>`<tr><td>${o.c.i} ${o.c.n}</td><td>$${f2(o.v)}</td><td>${T?(o.v/T*100).toFixed(1):0}%</td></tr>`).join('')+`<tr><th>សរុប</th><th>$${f2(T)}</th><th>100%</th></tr></table>`;
+ const fm=['','',''].map((_,i)=>sum(e=>e.date.startsWith(y)&&e.cat==='food'&&e.sub===MEALS[i]));
+ h+='<h2 style="margin-top:16px">🍽️ អាហារ ចែកតាមពេល</h2><table>'+MEALS.map((m,i)=>`<tr><td>${m}</td><td>$${f2(fm[i])}</td></tr>`).join('')+'</table>';
+ $('yr').innerHTML=h;
+}
+
+function dlg(t,p,txt,btn,fn,file){$('dt').textContent=t;$('dp').textContent=p;$('dx').value=txt;$('d1').textContent=btn;$('d1').onclick=fn;$('df').classList.toggle('hide',!file);$('dlg').classList.add('on')}
+function copyTxt(){const x=$('dx');x.focus();x.select();x.setSelectionRange(0,9e9);let ok=false;try{ok=document.execCommand('copy')}catch(e){}
+ if(navigator.clipboard)navigator.clipboard.writeText(x.value).then(()=>0,()=>0);alert(ok?'✅ ចម្លងរួច។ សូមបិទភ្ជាប់ក្នុង Notes ឬ Email ដើម្បីរក្សាទុក។':'សូមចុចដាក់អត្ថបទឱ្យជ្រើសទាំងអស់ រួចចុច Copy។')}
+async function shareFile(name,type,text){
+ try{const f=new File([new Blob([text],{type})],name,{type});
+  if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:name});return true}}catch(e){if(e&&e.name==='AbortError')return false}
+ dlg('📋 ចម្លងទិន្នន័យ','ចុច "ចម្លង" រួចបិទភ្ជាប់ទុកក្នុង Notes / Email / Files របស់អ្នក។',text,'📋 ចម្លង',copyTxt,false);return false;
+}
+function impDlg(){dlg('📥 នាំចូលទិន្នន័យ','បិទភ្ជាប់អត្ថបទបម្រុងទុក (JSON) ខាងក្រោម ឬជ្រើស file។','','✅ នាំចូល',()=>{try{doImport(JSON.parse($('dx').value))}catch(e){alert('❌ អត្ថបទមិនត្រឹមត្រូវ')}},true)}
+function doImport(o){if(!o||!Array.isArray(o.items))throw 0;if(!confirm(`នាំចូល ${o.items.length} ការកត់ត្រា? ទិន្នន័យបច្ចុប្បន្ននឹងត្រូវជំនួស។`))return;S={rate:o.rate>0?o.rate:0.65,items:o.items,ts:0,bk:Date.now()};persist();$('rate').value=S.rate;render();$('dlg').classList.remove('on');alert('✅ នាំចូលជោគជ័យ')}
+function exportCsv(){
+ const rows=[['Date','Category','Meal','Amount','Currency','USD','Note']].concat([...S.items].sort((a,b)=>a.date.localeCompare(b.date)).map(e=>[e.date,cat(e.cat).n,e.sub,e.amt,e.cur,usd(e).toFixed(2),e.note]));
+ shareFile('expenses.csv','text/csv','\ufeff'+rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(',')).join('\n'));
+}
+async function backup(){
+ const ok=await shareFile('expenses-backup-'+today()+'.json','application/json',JSON.stringify(S));
+ S.bk=Date.now();persist();render();if(ok)alert('✅ បម្រុងទុករួចរាល់។')
+}
+function restore(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{doImport(JSON.parse(r.result))}catch(e){alert('❌ file មិនត្រឹមត្រូវ')}inp.value=''};r.readAsText(f)}
+function remind(){
+ const b=$('bw'),days=S.bk?(Date.now()-S.bk)/864e5:999;
+ if(S.items.length&&days>14){b.classList.remove('hide');b.innerHTML='⚠️ '+(S.bk?`មិនបានបម្រុងទុកអស់ ${Math.floor(days)} ថ្ងៃ`:'មិនទាន់បានបម្រុងទុកទិន្នន័យ')+' — ចុច <b>💾 បម្រុងទុក</b> ដើម្បីការពារការបាត់ទិន្នន័យ។'}else b.classList.add('hide');
+}
+// App icon + manifest (generated, works offline)
+function mkIcon(){
+ try{const c=document.createElement('canvas');c.width=c.height=180;const x=c.getContext('2d');
+  x.fillStyle='#2563eb';x.fillRect(0,0,180,180);x.fillStyle='#fff';x.font='bold 110px -apple-system,sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('$',90,98);
+  const u=c.toDataURL('image/png');
+  const l=document.createElement('link');l.rel='apple-touch-icon';l.href=u;document.head.appendChild(l);
+  const m={name:'ចំណាយសិក្សានៅក្រៅប្រទេស',short_name:'ចំណាយ',display:'standalone',start_url:location.href.split('#')[0],background_color:'#2563eb',theme_color:'#2563eb',icons:[{src:u,sizes:'180x180',type:'image/png'}]};
+  const k=document.createElement('link');k.rel='manifest';k.href='data:application/manifest+json,'+encodeURIComponent(JSON.stringify(m));document.head.appendChild(k);
+ }catch(e){}
+}
+init();
+</script>
+</body>
+</html>
